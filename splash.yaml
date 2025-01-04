@@ -1,0 +1,19 @@
+flutter_native_splash:
+  color: "#ffffff"
+  # image: assets/logos/e-commerce-light-mode.png
+  branding: assets/images/splash_images/brand-light-mode.png
+
+  color_dark: "#272727"
+  # image_dark: assets/logos/e-commerce-dark-mode.png
+  branding_dark: assets/images/splash_images/brand-dark-mode.png
+
+  android_12:
+    color: "#ffffff"
+    # image: assets/logos/e-commerce-light-mode.png
+    branding: assets/images/splash_images/brand-light-mode.png
+
+    color_dark: "#272727"
+    # image_dark: assets/logos/e-commerce-dark-mode.png
+    branding_dark: assets/images/splash_images/brand-dark-mode.png
+
+  web: false
