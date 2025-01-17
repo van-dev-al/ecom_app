@@ -50,8 +50,9 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCzphxcHf0SNRTYizVeeWOhqWeh7R1SuHs',
-    appId: '1:1079253197285:android:69f3afa263d064af638f0c',
+      // need reinstall firebase config to use
+    apiKey: '',
+    appId: '',
     messagingSenderId: '1079253197285',
     projectId: 'ecommerceapp-726fb',
     storageBucket: 'ecommerceapp-726fb.firebasestorage.app',
