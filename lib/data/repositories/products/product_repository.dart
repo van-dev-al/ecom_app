@@ -1,3 +1,4 @@
+import 'package:ecom_app/data/repositories/tradematk/trademark_repository.dart';
 import 'package:ecom_app/features/ecom/models/products/product_model.dart';
 import 'package:ecom_app/utils/http/http_client.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ class ProductRepository extends GetxController {
   static ProductRepository get instance => Get.find();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final trademarkRepo = Get.put(TrademarkRepository());
 
   static const String endpoint = 'latest_products_data';
   static const List<String> allowedSpiders = [
@@ -26,7 +28,17 @@ class ProductRepository extends GetxController {
 
       for (var item in dataList) {
         if (allowedSpiders.contains(item['spider'])) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
 
@@ -44,7 +56,17 @@ class ProductRepository extends GetxController {
 
       for (var item in dataList) {
         if (productUrl.contains(item['data']['url'])) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
       return products;
@@ -62,7 +84,17 @@ class ProductRepository extends GetxController {
 
       for (var item in dataList) {
         if (productUrl.contains(item['data']['url'])) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
       return products;
@@ -82,7 +114,17 @@ class ProductRepository extends GetxController {
 
       for (var item in dataList) {
         if (item['data']['source'] == source) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
 
@@ -103,7 +145,48 @@ class ProductRepository extends GetxController {
 
       for (var item in dataList) {
         if (item['data']['source'] == source) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
+        }
+      }
+
+      return products;
+    } catch (e) {
+      throw 'Error';
+    }
+  }
+
+  Future<List<ProductModel>> fetchCompareProductWithNameAndCategoryId(
+      String searchQuery, Map<String, dynamic> query, String categoryId) async {
+    try {
+      final data = await EHttpHelper.get(endpoint, queryParams: query);
+
+      final List<dynamic> dataList = data['data'];
+
+      List<ProductModel> products = [];
+
+      for (var item in dataList) {
+        if (item['data']['category_id'] == categoryId) {
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
 
@@ -124,7 +207,17 @@ class ProductRepository extends GetxController {
 
       for (var item in dataList) {
         if (item['data']['category_id'] == categoryId) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
 
@@ -138,21 +231,31 @@ class ProductRepository extends GetxController {
     }
   }
 
-  Future<List<ProductModel>> searchProducts(String query) async {
+  Future<List<ProductModel>> searchProducts(
+      String keyword, Map<String, dynamic>? query) async {
     try {
-      final data = await EHttpHelper.get(endpoint);
+      final data = await EHttpHelper.get(endpoint, queryParams: query);
       final List<dynamic> dataList = data['data'];
       List<ProductModel> products = [];
 
       for (var item in dataList) {
         if (allowedSpiders.contains(item['spider'])) {
-          final product = ProductModel.fromJson(item['data']);
-          if (product.name.toLowerCase().contains(query.toLowerCase()) ||
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          if (product.name.toLowerCase().contains(keyword.toLowerCase()) ||
               product.trademarkModel!.source
                   .toLowerCase()
-                  .contains(query.toLowerCase()) ||
-              product.brand.toLowerCase().contains(query.toLowerCase()) ||
-              product.model!.toLowerCase().contains(query.toLowerCase())) {
+                  .contains(keyword.toLowerCase()) ||
+              product.brand.toLowerCase().contains(keyword.toLowerCase()) ||
+              product.model!.toLowerCase().contains(keyword.toLowerCase())) {
             products.add(product);
           }
         }
@@ -164,20 +267,55 @@ class ProductRepository extends GetxController {
     }
   }
 
-  Future<List<ProductModel>> fetchFilteredProducts() async {
+  Future<List<ProductModel>> updateHomeScreenData() async {
     try {
-      final data = await EHttpHelper.get(endpoint);
+      final List<ProductModel> products = await fetchFilteredProducts(
+        limit: -1,
+        query: {
+          'categories': '',
+          'sortBy': '',
+          'page': '',
+          'pageSize': '',
+        },
+      );
+
+      await updateProductCount(products);
+      await updateCategoryProductCounts(products);
+
+      return products;
+    } catch (e) {
+      throw Exception('Failed to update home screen data: ${e.toString()}');
+    }
+  }
+
+  Future<List<ProductModel>> fetchFilteredProducts({
+    required int limit,
+    required Map<String, dynamic>? query,
+  }) async {
+    try {
+      final data = await EHttpHelper.get(endpoint, queryParams: query);
       final List<dynamic> dataList = data['data'];
       List<ProductModel> products = [];
 
       for (var item in dataList) {
         if (allowedSpiders.contains(item['spider'])) {
-          products.add(ProductModel.fromJson(item['data']));
+          var productJson = item['data'];
+          var source = productJson['source'];
+
+          String image = await trademarkRepo.getImageForSource(source);
+
+          var product = ProductModel.fromJson({
+            ...productJson,
+            'image': image,
+          });
+
+          products.add(product);
         }
       }
 
-      await _updateProductCount(products);
-      await _updateCategoryProductCounts(products);
+      if (limit != -1 && products.length > limit) {
+        products = products.sublist(0, limit);
+      }
 
       products.shuffle();
       return products;
@@ -186,7 +324,7 @@ class ProductRepository extends GetxController {
     }
   }
 
-  Future<void> _updateProductCount(List<ProductModel> products) async {
+  Future<void> updateProductCount(List<ProductModel> products) async {
     Map<String, int> sourceCounts = {};
 
     for (var product in products) {
@@ -225,7 +363,7 @@ class ProductRepository extends GetxController {
     }
   }
 
-  Future<void> _updateCategoryProductCounts(List<ProductModel> products) async {
+  Future<void> updateCategoryProductCounts(List<ProductModel> products) async {
     Map<String, Map<String, int>> categoryCounts = {};
 
     for (var product in products) {

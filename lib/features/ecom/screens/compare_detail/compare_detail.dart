@@ -3,6 +3,7 @@ import 'package:ecom_app/features/ecom/models/products/product_model.dart';
 import 'package:ecom_app/utils/constaints/sizes.dart';
 import 'package:ecom_app/utils/formatters/formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompareDetailScreen extends StatelessWidget {
@@ -32,7 +33,7 @@ class CompareDetailScreen extends StatelessWidget {
       appBar: EAppBar(
         showBackArrow: true,
         title: Text(
-          'Compare Detail',
+          'Product specifications',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
@@ -42,7 +43,7 @@ class CompareDetailScreen extends StatelessWidget {
               left: ESizes.sm, right: ESizes.sm, bottom: ESizes.sm),
           child: Column(
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: ESizes.spaceBtwItems),
               Table(
                 columnWidths: const {
                   0: IntrinsicColumnWidth(),
@@ -51,20 +52,21 @@ class CompareDetailScreen extends StatelessWidget {
                 },
                 border: TableBorder.all(color: Colors.grey, width: 0.5),
                 children: [
-                  _buildTableRow('Name', product1.name, product2.name),
-                  _buildTableRow('Price', formatPrice1, formatPrice2),
+                  _buildTableRow('Tên', product1.name, product2.name),
+                  _buildTableRow('Hãng', product1.brand, product2.brand),
+                  _buildTableRow('Model', product1.model.toString(),
+                      product2.model.toString()),
+                  _buildTableRow('Giá hiện tại', formatPrice1, formatPrice2),
                   _buildTableRow(
-                      'Original Price',
+                      'Giá gốc',
                       EFormatter.formatCurrency(product1.originalPrice),
                       EFormatter.formatCurrency(product2.originalPrice)),
                   _buildTableRow('Discount', '${product1.discount}%',
                       '${product2.discount}%'),
-                  _buildTableRow('Rating', '${product1.ratingAverage}',
+                  _buildTableRow('Đánh giá', '${product1.ratingAverage}',
                       '${product2.ratingAverage}'),
                   _buildTableRow('Reviews', '${product1.reviewCount}',
                       '${product2.reviewCount}'),
-                  _buildTableRow('Model', product1.model.toString(),
-                      product2.model.toString()),
                   _buildTableRow(
                       'CPU', product1.cpu ?? 'N/A', product2.cpu ?? 'N/A'),
                   _buildTableRow(
@@ -73,41 +75,41 @@ class CompareDetailScreen extends StatelessWidget {
                       'RAM', product1.ram ?? 'N/A', product2.ram ?? 'N/A'),
                   _buildTableRow(
                       'ROM', product1.rom ?? 'N/A', product2.rom ?? 'N/A'),
-                  _buildTableRow('Battery', product1.battery ?? 'N/A',
+                  _buildTableRow('Pin', product1.battery ?? 'N/A',
                       product2.battery ?? 'N/A'),
                   _buildTableRow('Chip set', product1.chipSet ?? 'N/A',
                       product2.chipSet ?? 'N/A'),
                   _buildTableRow(
-                      'Camera Primary',
+                      'Camera chính',
                       product1.cameraPrimary ?? 'N/A',
                       product2.cameraPrimary ?? 'N/A'),
                   _buildTableRow(
-                      'Camera Secondary',
+                      'Camera phụ',
                       product1.cameraSecondary ?? 'N/A',
                       product2.cameraSecondary ?? 'N/A'),
-                  _buildTableRow('Camera Video', product1.cameraVideo ?? 'N/A',
+                  _buildTableRow('Quay phim', product1.cameraVideo ?? 'N/A',
                       product2.cameraVideo ?? 'N/A'),
-                  _buildTableRow('Display Type', product1.displayType ?? 'N/A',
+                  _buildTableRow('Loại màn hình', product1.displayType ?? 'N/A',
                       product2.displayType ?? 'N/A'),
-                  _buildTableRow('Screen Size', product1.screenSize ?? 'N/A',
+                  _buildTableRow(
+                      'Kích thước màn hình',
+                      product1.screenSize ?? 'N/A',
                       product2.screenSize ?? 'N/A'),
-                  _buildTableRow('Sim Type', product1.simType ?? 'N/A',
+                  _buildTableRow('Loại Sim', product1.simType ?? 'N/A',
                       product2.simType ?? 'N/A'),
                   _buildTableRow('Internet', product1.internet ?? 'N/A',
                       product2.internet ?? 'N/A'),
                   _buildTableRow(
                       'Wifi', product1.wifi ?? 'N/A', product2.wifi ?? 'N/A'),
-                  _buildTableRow(
-                      'Charging Port',
-                      product1.chargingPort ?? 'N/A',
+                  _buildTableRow('Cổng sạc', product1.chargingPort ?? 'N/A',
                       product2.chargingPort ?? 'N/A'),
-                  _buildTableRow('Jack 3.5mm', product1.jack35mm ?? 'N/A',
+                  _buildTableRow('Jack tai nghe', product1.jack35mm ?? 'N/A',
                       product2.jack35mm ?? 'N/A'),
-                  _buildTableRow('Source', product1.trademarkModel!.source,
+                  _buildTableRow('Nguồn', product1.trademarkModel!.source,
                       product2.trademarkModel!.source),
-                  _buildTableRow('Weight', product1.weight ?? 'N/A',
+                  _buildTableRow('Trọng lượng', product1.weight ?? 'N/A',
                       product2.weight ?? 'N/A'),
-                  _buildTableRow('Accessories', product1.accessories ?? 'N/A',
+                  _buildTableRow('Phụ kiện', product1.accessories ?? 'N/A',
                       product2.accessories ?? 'N/A'),
                 ],
               ),
@@ -132,7 +134,7 @@ class CompareDetailScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: ESizes.spaceBtwItems / 2),
               Row(
                 children: [
                   Expanded(
@@ -160,24 +162,70 @@ class CompareDetailScreen extends StatelessWidget {
   }
 
   TableRow _buildTableRow(String label, String value1, String value2) {
+    Color color1 = Colors.black;
+    Color color2 = Colors.black;
+
+    if (label == 'Giá hiện tại') {
+      String cleanValue1 =
+          value1.replaceAll('.', '').replaceAll('₫', '').trim();
+      String cleanValue2 =
+          value2.replaceAll('.', '').replaceAll('₫', '').trim();
+
+      double price1 = double.tryParse(cleanValue1) ?? 0.0;
+      double price2 = double.tryParse(cleanValue2) ?? 0.0;
+
+      // print("Original value1: $value1, value2: $value2");
+      // print("Cleaned value1: $cleanValue1, value2: $cleanValue2");
+      // print("Parsed price1: $price1, price2: $price2");
+
+      color1 = price1 < price2 ? Colors.green : Colors.red;
+      color2 = price2 < price1 ? Colors.green : Colors.red;
+    } else if (label == 'Discount') {
+      double discount1 = double.tryParse(value1.replaceAll('%', '')) ?? 0;
+      double discount2 = double.tryParse(value2.replaceAll('%', '')) ?? 0;
+
+      color1 = discount1 > discount2 ? Colors.red : Colors.black;
+      color2 = discount2 > discount1 ? Colors.red : Colors.black;
+    }
+
     return TableRow(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(ESizes.spaceBtwItems / 2),
           child: Text(
             label,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(value1),
+          padding: const EdgeInsets.all(ESizes.spaceBtwItems / 2),
+          child: _buildValueWithIcon(label, value1, color1),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(value2),
+          padding: const EdgeInsets.all(ESizes.spaceBtwItems / 2),
+          child: _buildValueWithIcon(label, value2, color2),
         ),
       ],
     );
+  }
+
+  Widget _buildValueWithIcon(String label, String value, Color color) {
+    if (label == 'Đánh giá') {
+      return Row(
+        children: [
+          Text(
+            value,
+            style: TextStyle(color: color),
+          ),
+          const SizedBox(width: ESizes.spaceBtwItems / 4),
+          Icon(Iconsax.star5, color: Colors.amber, size: ESizes.iconSm),
+        ],
+      );
+    } else {
+      return Text(
+        value,
+        style: TextStyle(color: color),
+      );
+    }
   }
 }

@@ -77,7 +77,6 @@ class AuthenticationRepositories extends GetxController {
   }
 
   // Email authentication login, register and logout
-  // login
   Future<UserCredential> loginWithEmailAndPassword(
       String email, String password) async {
     try {

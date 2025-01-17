@@ -20,8 +20,6 @@ class SignupController extends GetxController {
   final password = TextEditingController();
   final phoneNumber = TextEditingController();
   GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
-  // final signupFormKey = GlobalKey<FormState>(debugLabel: 'signupForm');
-  // final signupFormKey = GlobalKey<FormState>(debugLabel: 'signupForm');
 
   final hidePassword = true.obs;
   final privacy = true.obs;

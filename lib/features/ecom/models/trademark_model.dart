@@ -54,7 +54,7 @@ class TrademarkModel {
         source: data['Source'] ?? '',
         isFeatured: data['IsFeatured'] ?? false,
         productCount: int.parse((data['ProductCount'] ?? 0).toString()),
-        image: data['Image'] ?? [],
+        image: data['Image'] ?? '',
       );
     } else {
       return TrademarkModel.empty();

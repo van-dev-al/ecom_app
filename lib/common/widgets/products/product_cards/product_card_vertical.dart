@@ -1,8 +1,8 @@
 import 'package:ecom_app/common/styles/shadows.dart';
 import 'package:ecom_app/common/widgets/images/rounded_image.dart';
+import 'package:ecom_app/common/widgets/products/compare/compare_product.dart';
 import 'package:ecom_app/common/widgets/products/favorite_icon/favorite_icon.dart';
 import 'package:ecom_app/common/widgets/text/product_title_text.dart';
-import 'package:ecom_app/features/ecom/controllers/products/compare_controller.dart';
 import 'package:ecom_app/features/ecom/models/products/product_model.dart';
 import 'package:ecom_app/features/ecom/screens/product_detail/product_detail.dart';
 import 'package:ecom_app/utils/constaints/colors.dart';
@@ -10,7 +10,6 @@ import 'package:ecom_app/utils/constaints/sizes.dart';
 import 'package:ecom_app/utils/helpers/helper_funtions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 import '../../custom_shapes/containers/rouded_container.dart';
 import '../../text/product_price_text.dart';
@@ -24,7 +23,6 @@ class EProductCardVertical extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = EHelperFuntions.isDarkMode(context);
-    final controller = Get.put(CompareController());
 
     return Material(
       color: Colors.transparent,
@@ -42,10 +40,12 @@ class EProductCardVertical extends StatelessWidget {
             color: dark ? EColors.dark.withOpacity(0.6) : EColors.white,
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // thumbnail, favorites button, discount tag
               ERoundedContainer(
                 height: 180,
+                width: double.infinity,
                 padding: const EdgeInsets.all(ESizes.md),
                 backgroundColor: dark ? EColors.dark : EColors.light,
                 child: Stack(
@@ -94,7 +94,7 @@ class EProductCardVertical extends StatelessWidget {
                     const SizedBox(height: ESizes.spaceBtwItems / 2),
                     ETrademarkTitleWithIcon(
                       title: product.trademarkModel!.source,
-                      image: product.trademarkModel!.image,
+                      image: product.trademarkModel?.image ?? '',
                     ),
                   ],
                 ),
@@ -117,11 +117,18 @@ class EProductCardVertical extends StatelessWidget {
                   // add to compare button
                   InkWell(
                     onTap: () {
-                      controller.addProductToCompare(product);
+                      // controller.addProductToCompare(product);
+                      Get.to(() => CompareProductScreen(
+                            title: 'Compare Products',
+                            product: product,
+                            categoryId: product.categoryId,
+                          ));
                     },
                     child: Container(
-                      decoration: const BoxDecoration(
-                        color: EColors.dark,
+                      decoration: BoxDecoration(
+                        color: dark
+                            ? EColors.primary.withOpacity(0.8)
+                            : EColors.dark,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(ESizes.cardRadiusMd),
                           bottomRight:
@@ -133,7 +140,7 @@ class EProductCardVertical extends StatelessWidget {
                         height: ESizes.iconLg * 1.2,
                         child: Center(
                           child: Icon(
-                            Iconsax.add,
+                            Icons.compare_arrows,
                             color: EColors.white,
                           ),
                         ),

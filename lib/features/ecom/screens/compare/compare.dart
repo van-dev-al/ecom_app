@@ -21,7 +21,7 @@ class CompareScreen extends StatelessWidget {
       appBar: EAppBar(
         showBackArrow: true,
         title: Text(
-          'Compare product',
+          'Compare product specifications',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),

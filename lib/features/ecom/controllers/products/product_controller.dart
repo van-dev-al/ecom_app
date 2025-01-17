@@ -20,8 +20,15 @@ class ProductController extends GetxController {
   Future<void> fetchFeaturedProducts() async {
     try {
       isLoading.value = true;
+      Map<String, dynamic> query = {
+        'categories': '',
+        'sortBy': '',
+        'page': '1',
+        'pageSize': '10',
+      };
 
-      final products = await productRespository.fetchFilteredProducts();
+      final products = await productRespository.fetchFilteredProducts(
+          query: query, limit: 4);
 
       featuredProducts.assignAll(products);
     } catch (e) {

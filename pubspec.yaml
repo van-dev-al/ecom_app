@@ -25,6 +25,7 @@ dependencies:
   cached_network_image: ^3.4.1
   image_picker: ^1.1.2
   fluttertoast: ^8.2.10
+  string_similarity: ^2.1.1
 
   # Firebase services
   firebase_core: ^3.9.0

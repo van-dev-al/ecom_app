@@ -12,6 +12,7 @@ class CategoryController extends GetxController {
   final _categoryRepository = Get.put(CategoryRepository());
   RxList<CategoryModel> allCategories = <CategoryModel>[].obs;
   RxList<CategoryModel> featuresCategories = <CategoryModel>[].obs;
+  final productRepo = Get.put(ProductRepository());
 
   @override
   void onInit() {

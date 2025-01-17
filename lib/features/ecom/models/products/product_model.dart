@@ -90,7 +90,6 @@ class ProductModel {
         imageUrls: [],
         thumbnail: '',
         trademarkModel: TrademarkModel.empty(),
-        // productDetailsModel: ProductDetailsModel.empty(),
         discount: 0,
         brand: '',
         categoryId: '',
@@ -112,7 +111,6 @@ class ProductModel {
       'Thumbnail': thumbnail,
       'CategoryId': categoryId,
       'TrademarkModel': trademarkModel?.toJson(),
-      // 'ProductDetailsModel': productDetailsModel.toJson(),
       'battery': battery,
       'bluetooth': bluetooth,
       'camera_primary': cameraPrimary,
@@ -153,7 +151,6 @@ class ProductModel {
       'Thumbnail': thumbnail,
       'CategoryId': categoryId,
       'TrademarkModel': trademarkModel?.toJson(),
-      // 'ProductDetailsModel': productDetailsModel.toJson(),
       'battery': battery,
       'bluetooth': bluetooth,
       'camera_primary': cameraPrimary,
@@ -210,9 +207,9 @@ class ProductModel {
       imageUrls: processImageUrls(),
       thumbnail: data['thumbnails'] ?? '',
       categoryId: data['category_id'] ?? '',
-      trademarkModel: TrademarkModel.fromJson({'Source': data['source'] ?? ''}),
-      // productDetailsModel:
-      //     ProductDetailsModel.fromJson(data['productDetailsModel'] ?? {}),
+      trademarkModel: TrademarkModel.fromJson(
+        {'Source': data['source'] ?? '', 'Image': data['image'] ?? ''},
+      ),
       battery: data['battery'] ?? '',
       bluetooth: data['bluetooth'] ?? '',
       cameraPrimary: data['camera_primary'] ?? '',
@@ -272,9 +269,7 @@ class ProductModel {
       imageUrls: processFirestoreImageUrls(),
       thumbnail: data['Thumbnail'] ?? '',
       categoryId: data['CategoryId'] ?? '',
-      trademarkModel: TrademarkModel.fromJson(data['Source']),
-      // productDetailsModel:
-      //     ProductDetailsModel.fromSnapshot(data['ProductDetailsModel']),
+      trademarkModel: TrademarkModel.fromSnapshot(data['Source']),
     );
   }
 }

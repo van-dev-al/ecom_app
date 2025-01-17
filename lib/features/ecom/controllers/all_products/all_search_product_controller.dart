@@ -12,12 +12,19 @@ class AllSearchController extends GetxController {
   final RxString selectedSortOption = ''.obs;
   final RxList<ProductModel> products = <ProductModel>[].obs;
 
-  Future<List<ProductModel>> fetchProductsBySearchQuery(String query) async {
+  Future<List<ProductModel>> fetchProductsBySearchQuery(String keyWord) async {
     try {
-      final products = await repository.searchProducts(query);
+      Map<String, dynamic> query = {
+        'categories': '',
+        'sortBy': '',
+        'page': '',
+        'pageSize': '',
+        'searchNameQuery': keyWord
+      };
+      final products = await repository.searchProducts(keyWord, query);
       assignProducts(products);
 
-      await toggleSearchHistory(query);
+      await toggleSearchHistory(keyWord);
 
       return products;
     } catch (e) {

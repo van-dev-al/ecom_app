@@ -6,8 +6,11 @@ import 'package:ecom_app/common/widgets/loaders/loaders.dart';
 import 'package:ecom_app/data/repositories/authentication/authentication_repositories.dart';
 import 'package:ecom_app/data/repositories/products/product_repository.dart';
 import 'package:ecom_app/features/ecom/models/products/product_model.dart';
+import 'package:ecom_app/utils/constaints/sizes.dart';
+import 'package:ecom_app/utils/formatters/formatter.dart';
 import 'package:ecom_app/utils/local_storage/storage_utility.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class FavoriteController extends GetxController {
@@ -21,7 +24,7 @@ class FavoriteController extends GetxController {
 
     super.onInit();
     initFavorites();
-    updateFavoriteProductPrices();
+    // updateFavoriteProductPrices();
   }
 
   Future<void> initFavorites() async {
@@ -182,7 +185,7 @@ class FavoriteController extends GetxController {
     }
   }
 
-  Future<void> updateFavoriteProductPrices() async {
+  Future<void> updateFavoriteProductPrices(BuildContext context) async {
     String userId = AuthenticationRepositories.instance.authUser?.uid ?? "/";
 
     try {
@@ -193,7 +196,27 @@ class FavoriteController extends GetxController {
       List<ProductModel> updatedProducts =
           await ProductRepository.instance.getProductByUrl(productUrls);
 
+      List<Map<String, dynamic>> discountedProducts = [];
+
       for (var product in updatedProducts) {
+        QuerySnapshot priceHistorySnapshot = await FirebaseFirestore.instance
+            .collection('PriceHistory')
+            .doc(userId)
+            .collection('history')
+            .where('productUrl', isEqualTo: product.urls)
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .get();
+
+        double? oldPrice;
+        if (priceHistorySnapshot.docs.isNotEmpty) {
+          var firstDoc =
+              priceHistorySnapshot.docs.first.data() as Map<String, dynamic>;
+          if (firstDoc.containsKey('price')) {
+            oldPrice = firstDoc['price'] as double?;
+          }
+        }
+
         await FirebaseFirestore.instance
             .collection('PriceHistory')
             .doc(userId)
@@ -203,6 +226,65 @@ class FavoriteController extends GetxController {
           'timestamp': FieldValue.serverTimestamp(),
           'productUrl': product.urls,
         });
+
+        if (oldPrice != null && product.price < oldPrice) {
+          discountedProducts.add({
+            'name': product.name,
+            'oldPrice': oldPrice,
+            'newPrice': product.price,
+            'url': product.urls,
+          });
+        }
+      }
+
+      if (discountedProducts.isNotEmpty) {
+        await showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Notification!'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: discountedProducts.map((product) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: ESizes.spaceBtwItems / 2),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Product in your price history: ${product['name']}',
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: ESizes.fontSizeMd),
+                        ),
+                        const SizedBox(height: ESizes.spaceBtwItems / 2),
+                        Text('Price has changed:'),
+                        Text(
+                            'Old price: ${EFormatter.formatCurrency(product['oldPrice'])}',
+                            style: TextStyle(color: Colors.red[700])),
+                        Text(
+                            'New price: ${EFormatter.formatCurrency(product['newPrice'])}',
+                            style: TextStyle(color: Colors.green)),
+                        Text(
+                            'Savings: ${EFormatter.formatCurrency((product['oldPrice'] - product['newPrice']))}'),
+                        const Divider(),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
       }
     } catch (e) {
       throw e.toString();

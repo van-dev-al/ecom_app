@@ -29,6 +29,25 @@ class TrademarkRepository extends GetxController {
     }
   }
 
+  Future<String> getImageForSource(String source) async {
+    try {
+      final docSnapshot = await _db
+          .collection('TradeMark')
+          .where('Source', isEqualTo: source)
+          .limit(1)
+          .get();
+
+      if (docSnapshot.docs.isEmpty) {
+        return '';
+      }
+
+      final docData = docSnapshot.docs.first.data();
+      return docData['Image'] ?? '';
+    } catch (e) {
+      throw Exception('Error getting image for source: $e');
+    }
+  }
+
   Future<List<TrademarkModel>> getTrademarksForCategory(
       String categoryId) async {
     try {

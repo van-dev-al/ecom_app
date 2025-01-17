@@ -5,6 +5,8 @@ import 'package:ecom_app/common/widgets/products/product_cards/product_card_vert
 import 'package:ecom_app/common/widgets/search_fields/search_screen.dart';
 import 'package:ecom_app/common/widgets/shimmers/veltical_product_shimmer.dart';
 import 'package:ecom_app/common/widgets/text/search_heading.dart';
+import 'package:ecom_app/data/repositories/products/product_repository.dart';
+import 'package:ecom_app/features/ecom/controllers/products/favorite_controller.dart';
 import 'package:ecom_app/features/ecom/controllers/products/product_controller.dart';
 import 'package:ecom_app/features/ecom/models/products/product_model.dart';
 import 'package:ecom_app/features/ecom/models/trademark_model.dart';
@@ -28,9 +30,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  List<ProductModel> products = [];
   @override
   void initState() {
     super.initState();
+    initializeData();
+  }
+
+  Future<void> initializeData() async {
+    try {
+      await ProductRepository.instance.updateHomeScreenData();
+    } catch (e) {
+      print('Error initializing data: $e');
+    }
   }
 
   @override
@@ -38,6 +50,12 @@ class HomeScreenState extends State<HomeScreen> {
     final controller = Get.put(ProductController());
     final dark = EHelperFuntions.isDarkMode(context);
     final buttonTextColor = dark ? EColors.light : EColors.dark;
+
+    final priceHistoryController = FavoriteController.instance;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      priceHistoryController.updateFavoriteProductPrices(context);
+    });
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -91,14 +109,6 @@ class HomeScreenState extends State<HomeScreen> {
                   right: ESizes.defaultSpace),
               child: Column(
                 children: [
-                  // banner
-                  // EBannerSlider(
-                  //   banners: [
-                  //     EImages.bannerImage1,
-                  //     EImages.bannerImage2,
-                  //     EImages.bannerImage3
-                  //   ],
-                  // ),
                   // popular products
                   ESectionHeading(
                     onPressed: () {
@@ -132,10 +142,9 @@ class HomeScreenState extends State<HomeScreen> {
                     }
 
                     return EGridLayout(
-                      itemCount: 4,
-                      itemBuilder: (_, index) => EProductCardVertical(
-                          product: controller.featuredProducts[index]),
-                    );
+                        itemCount: 4,
+                        itemBuilder: (_, index) => EProductCardVertical(
+                            product: controller.featuredProducts[index]));
                   }),
                 ],
               ),

@@ -21,13 +21,12 @@ class ESearchScreenState extends State<ESearchScreen> {
   @override
   void initState() {
     super.initState();
-    // Gọi fetchSearchHistory khi màn hình được khởi tạo
     searchHistoryController.fetchSearchHistory();
   }
 
   void onSearch(String keyword) {
     if (keyword.isNotEmpty) {
-      Get.snackbar("Searching", "You are searching or: $keyword");
+      Get.snackbar("Searching", "You are searching for: $keyword");
       Get.to(() => AllSearchProduct(title: widget.title, keyWord: keyword))
           ?.then((_) {
         searchHistoryController.fetchSearchHistory();
@@ -102,21 +101,9 @@ class ESearchScreenState extends State<ESearchScreen> {
                         historyItem.query,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-
-                      // subtitle: Text(
-                      //   'Searched on ${historyItem.timestamp}',
-                      //   style: Theme.of(context).textTheme.bodySmall,
-                      // ),
                       onTap: () {
                         onSearch(historyItem.query);
                       },
-                      // trailing: IconButton(
-                      //   icon: const Icon(Icons.delete),
-                      //   onPressed: () {
-                      //     searchHistoryController
-                      //         .deleteSearchHistory(historyItem.query);
-                      //   },
-                      // ),
                     );
                   },
                 ),

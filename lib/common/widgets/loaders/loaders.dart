@@ -21,11 +21,17 @@ class ELoader {
               color: EHelperFuntions.isDarkMode(Get.context!)
                   ? EColors.darkGrey.withOpacity(0.9)
                   : EColors.grey.withOpacity(0.9)),
-          child: Center(
-            child: Text(
-              message,
-              style: Theme.of(Get.context!).textTheme.labelLarge,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  message,
+                  style: Theme.of(Get.context!).textTheme.labelLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
       ),

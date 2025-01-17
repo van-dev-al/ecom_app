@@ -74,12 +74,12 @@ class ProductDetailScreen extends StatelessWidget {
         ),
       ),
 
-      // add to compare button
+      // add to detail compare button
       floatingActionButton: EBottomAddToCompare(
         onPressed: () {
           controller.addProductToCompare(product);
         },
-        label: 'Add to Compare',
+        label: 'Compare specifications',
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

@@ -34,24 +34,20 @@ class ProductDetailsSpecScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: ESizes.spaceBtwItems),
-
-              // Tên sản phẩm
               Text(
                 product.name,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: ESizes.fontSizeLg,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: ESizes.spaceBtwItems / 2),
-
-              // Giá sản phẩm
               Row(
                 children: [
                   Text(
                     'Giá hiện tại: $formatPrice',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: ESizes.fontSizeMd,
                       color: Colors.green,
                       fontWeight: FontWeight.bold,
                     ),
@@ -60,7 +56,7 @@ class ProductDetailsSpecScreen extends StatelessWidget {
                   Text(
                     '-${product.discount}%',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: ESizes.fontSizeSm,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -71,44 +67,38 @@ class ProductDetailsSpecScreen extends StatelessWidget {
               Text(
                 'Giá gốc: $formatOriginalPrice',
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: ESizes.fontSizeSm,
                   decoration: TextDecoration.lineThrough,
                 ),
               ),
               const SizedBox(height: ESizes.spaceBtwItems),
-
-              // Đánh giá
               Row(
                 children: [
-                  const Icon(Iconsax.star5, color: Colors.amber, size: 24),
-                  const SizedBox(width: 4),
+                  const Icon(Iconsax.star5,
+                      color: Colors.amber, size: ESizes.iconMd),
+                  const SizedBox(width: ESizes.spaceBtwItems / 4),
                   Text(
                     '${product.ratingAverage} / 5',
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: ESizes.fontSizeSm),
                   ),
                   const SizedBox(width: ESizes.spaceBtwItems),
                   Text(
                     '(${product.reviewCount} đánh giá)',
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: ESizes.fontSizeSm),
                   ),
                 ],
               ),
               const SizedBox(height: ESizes.spaceBtwItems),
-
-              // Thông số kỹ thuật
               const Text(
                 'Thông số kỹ thuật',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: ESizes.fontSizeMd,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: ESizes.spaceBtwItems / 2),
               buildSpecificationsTable(product),
-
               const SizedBox(height: ESizes.spaceBtwItems),
-
-              // Nút điều hướng đến nơi bán
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -128,10 +118,13 @@ class ProductDetailsSpecScreen extends StatelessWidget {
 
   Widget buildSpecificationsTable(ProductModel product) {
     final specifications = {
+      'Hãng': product.brand,
+      'Model': product.model ?? 'N/A',
       'Pin': product.battery ?? 'N/A',
       'Bluetooth': product.bluetooth ?? 'N/A',
       'Camera chính': product.cameraPrimary ?? 'N/A',
       'Camera phụ': product.cameraSecondary ?? 'N/A',
+      'Quay phim': product.cameraVideo ?? 'N/A',
       'Chip xử lý': product.chipSet ?? 'N/A',
       'CPU': product.cpu ?? 'N/A',
       'GPU': product.gpu ?? 'N/A',
@@ -139,13 +132,16 @@ class ProductDetailsSpecScreen extends StatelessWidget {
       'ROM': product.rom ?? 'N/A',
       'Kích thước màn hình': product.screenSize ?? 'N/A',
       'Loại màn hình': product.displayType ?? 'N/A',
+      'Loại Sim': product.simType ?? 'N/A',
       'NFC': product.nfc ?? 'N/A',
       'GPS': product.gps ?? 'N/A',
       'Internet': product.internet ?? 'N/A',
       'Jack tai nghe': product.jack35mm ?? 'N/A',
       'Cổng sạc': product.chargingPort ?? 'N/A',
+      'Nguồn': product.trademarkModel!.source,
       'Trọng lượng': product.weight ?? 'N/A',
       'WiFi': product.wifi ?? 'N/A',
+      'Phụ kiện': product.accessories ?? 'N/A',
     };
 
     return Builder(builder: (context) {
